@@ -296,7 +296,7 @@ def api_extract():
             except Exception as e:
                 pages_data.append({
                     'page_number': page_num,
-                    'analyze_contents': f"Error processing this page: {str(e)}",
+                    'transcribed_contents': f"Error processing this page: {str(e)}",
                     'optimized_details': "Error",
                     'is_important': True,
                 })
@@ -312,7 +312,7 @@ def api_extract():
 
 
 @app.route('/api/download/<file_format>')
-def api_download(file_format):
+def api_download():
     try:
         temp_id = session.get('pages_data_id')
         if not temp_id:

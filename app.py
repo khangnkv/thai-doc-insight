@@ -21,6 +21,7 @@ from PIL import Image
 import cv2
 import numpy as np
 from werkzeug.utils import secure_filename
+import uuid
 
 # --- Poppler Path Setup ---
 poppler_bin_path = r"C:\poppler-24.08.0\Library\bin"
@@ -239,6 +240,18 @@ Your response MUST be the JSON object and nothing else.
             "is_important": True # Mark as important for manual review
         }
 
+def save_pages_data(pages_data):
+    temp_id = str(uuid.uuid4())
+    temp_path = os.path.join(UPLOAD_FOLDER, f"pages_data_{temp_id}.json")
+    with open(temp_path, "w", encoding="utf-8") as f:
+        json.dump(pages_data, f, ensure_ascii=False)
+    return temp_id
+
+def load_pages_data(temp_id):
+    temp_path = os.path.join(UPLOAD_FOLDER, f"pages_data_{temp_id}.json")
+    with open(temp_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
 # --- API Routes for Frontend (Unchanged) ---
 @app.route('/api/upload', methods=['POST'])
 def api_upload():
@@ -276,7 +289,7 @@ def api_extract():
                 # Compose final result for this page - now with clean data
                 pages_data.append({
                     'page_number': page_num,
-                    'analyze_contents': analysis_result.get('transcribed_contents', transcribed_text), # Fallback to original text
+                    'transcribed_contents': analysis_result.get('transcribed_contents', transcribed_text),
                     'optimized_details': analysis_result.get('optimized_details'),
                     'is_important': analysis_result.get('is_important'),
                 })
@@ -289,7 +302,8 @@ def api_extract():
                 })
         
         # Store comprehensive data for download, not just minimal data
-        session['pages_data'] = pages_data
+        temp_id = save_pages_data(pages_data)
+        session['pages_data_id'] = temp_id
 
         return jsonify({'success': True, 'pages_data': pages_data, 'total_pages': len(pages_data)})
     except Exception as e:
@@ -300,14 +314,15 @@ def api_extract():
 @app.route('/api/download/<file_format>')
 def api_download(file_format):
     try:
-        # We need to reconstruct the dataframe from the detailed pages_data
-        pages_data_full = session.get('pages_data')
-        if not pages_data_full: return jsonify({'error': 'No data to download'}), 400
+        temp_id = session.get('pages_data_id')
+        if not temp_id:
+            return jsonify({'error': 'No data to download'}), 400
+        pages_data_full = load_pages_data(temp_id)
         
         # Prepare data for export, ensuring only relevant columns are included
         export_data = [{
             'page_number': page.get('page_number'),
-            'transcribed_contents': page.get('analyze_contents'),
+            'transcribed_contents': page.get('transcribed_contents'),
             'optimized_details': page.get('optimized_details'),
             'is_important': page.get('is_important')
         } for page in pages_data_full]

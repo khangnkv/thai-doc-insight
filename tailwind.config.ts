@@ -26,7 +26,20 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
+				},
+				document: {
+					DEFAULT: 'hsl(var(--document))',
+					accent: 'hsl(var(--document-accent))'
+				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))'
+				},
+				processing: {
+					DEFAULT: 'hsl(var(--processing))',
+					foreground: 'hsl(var(--processing-foreground))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',

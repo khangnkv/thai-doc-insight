@@ -1,14 +1,65 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { FileUpload } from '@/components/FileUpload';
+import { ProcessingStatus } from '@/components/ProcessingStatus';
+import { ResultsReview } from '@/components/ResultsReview';
+
+type AppState = 'upload' | 'processing' | 'review';
+
+interface PageData {
+  page_number: number;
+  analyze_contents: string;
+  optimized_details: string | null;
+  is_important: boolean | null;
+}
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const [currentState, setCurrentState] = useState<AppState>('upload');
+  const [filename, setFilename] = useState<string>('');
+  const [extractedData, setExtractedData] = useState<PageData[]>([]);
+
+  const handleFileUploaded = (uploadedFilename: string) => {
+    setFilename(uploadedFilename);
+    setCurrentState('processing');
+  };
+
+  const handleProcessingStart = () => {
+    // This is called when upload begins but we stay in upload state until complete
+  };
+
+  const handleProcessingComplete = (data: PageData[]) => {
+    setExtractedData(data);
+    setCurrentState('review');
+  };
+
+  const renderCurrentState = () => {
+    switch (currentState) {
+      case 'upload':
+        return (
+          <FileUpload 
+            onFileUploaded={handleFileUploaded}
+            onProcessingStart={handleProcessingStart}
+          />
+        );
+      case 'processing':
+        return (
+          <ProcessingStatus 
+            filename={filename}
+            onComplete={handleProcessingComplete}
+          />
+        );
+      case 'review':
+        return (
+          <ResultsReview 
+            data={extractedData}
+            filename={filename}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return renderCurrentState();
 };
 
 export default Index;

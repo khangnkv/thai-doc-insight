@@ -256,10 +256,17 @@ def load_pages_data(temp_id):
 @app.route('/api/upload', methods=['POST'])
 def api_upload():
     try:
-        if 'pdf_file' not in request.files: return jsonify({'error': 'No file part'}), 400
+        if 'pdf_file' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
         file = request.files['pdf_file']
-        if file.filename == '': return jsonify({'error': 'No selected file'}), 400
-        if not file.filename.lower().endswith('.pdf'): return jsonify({'error': 'Please upload a PDF file only'}), 400
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+
+        # Accept PDF and common image formats
+        allowed_exts = ('.pdf', '.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif')
+        if not file.filename.lower().endswith(allowed_exts):
+            return jsonify({'error': 'Please upload a PDF or image file (JPG, PNG, BMP, TIFF) only'}), 400
+
         filename = secure_filename(file.filename)
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(file_path)
@@ -278,15 +285,24 @@ def api_extract():
             return jsonify({'error': 'No file specified for extraction'}), 400
         if not os.path.exists(file_path):
             return jsonify({'error': 'File not found'}), 404
-        images = convert_from_path(file_path)
+
+        # Determine file type
+        ext = os.path.splitext(filename)[1].lower()
         pages_data = []
+
+        if ext == '.pdf':
+            images = convert_from_path(file_path)
+        elif ext in ('.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif'):
+            # Open as a single-page image
+            from PIL import Image
+            images = [Image.open(file_path)]
+        else:
+            return jsonify({'error': 'Unsupported file type for extraction'}), 400
+
         for page_num, image in enumerate(images, 1):
             try:
-                # Stage 1: OCR
                 transcribed_text = transcribe_image_with_typhoon(image)
-                # Stage 2: Analysis
                 analysis_result = analyze_text_with_typhoon(transcribed_text)
-                # Compose final result for this page - now with clean data
                 pages_data.append({
                     'page_number': page_num,
                     'transcribed_contents': analysis_result.get('transcribed_contents', transcribed_text),
@@ -300,8 +316,7 @@ def api_extract():
                     'optimized_details': "Error",
                     'is_important': True,
                 })
-        
-        # Store comprehensive data for download, not just minimal data
+
         temp_id = save_pages_data(pages_data)
         session['pages_data_id'] = temp_id
 

@@ -13,9 +13,10 @@ pdf2image
 pandas
 openpyxl
 
-# For image processing and enhancement (newly added)
+# For image processing and enhancement
 opencv-python-headless
 numpy
+Pillow
 
 # For loading environment variables from .env file
 python-dotenv

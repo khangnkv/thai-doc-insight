@@ -1,73 +1,129 @@
-# Welcome to your Lovable project
+# Thai Document Insight
 
-## Project info
+A web app for OCR, analysis, and summarization of Thai real estate and legal documents.  
+Supports PDF and image files (JPG, PNG, BMP, TIFF, etc).
 
-**URL**: https://lovable.dev/projects/bc1362a1-21e1-4010-b9f9-3031a8ef65a7
+---
 
-## How can I edit this code?
+## 🚀 Features
 
-There are several ways of editing your application.
+- **Upload** PDF or image files (JPG, PNG, BMP, TIFF)
+- **OCR**: Extracts Thai text with high accuracy using Typhoon API
+- **AI Analysis**: Summarizes and classifies document content
+- **Download** results as JSON, CSV, or XLSX
+- **Modern UI**: Built with React, TypeScript, shadcn-ui, and Tailwind CSS
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/bc1362a1-21e1-4010-b9f9-3031a8ef65a7) and start prompting.
+## 🛠️ Installation
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### 1. **Clone the repository**
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
+cd thai-doc-insight
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 2. **Backend Setup (Python)**
 
-# Step 3: Install the necessary dependencies.
-npm i
+- **Python 3.9+** recommended
+- Install dependencies:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```sh
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+- Create a `.env` file in the root directory with:
+
+```
+TYPHOON_API_KEY=your_typhoon_api_key_here
+SECRET_KEY=your_flask_secret_key_here
+```
+
+- **Poppler** is required for PDF support:
+  - Download from: https://github.com/oschwartz10612/poppler-windows/releases/
+  - Set the `poppler_bin_path` in `app.py` if needed.
+
+- Start the backend:
+
+```sh
+python app.py
+```
+
+The backend runs on [http://localhost:5000](http://localhost:5000) by default.
+
+---
+
+### 3. **Frontend Setup (React + Vite)**
+
+- **Node.js 18+** recommended
+
+```sh
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The frontend runs on [http://localhost:5173](http://localhost:5173) by default.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📝 Usage Workflow
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. **Upload** a PDF or image file (JPG, PNG, BMP, TIFF) via the web UI.
+2. The backend performs OCR and AI analysis on each page.
+3. **Review** extracted text and AI-generated summary for each page.
+4. **Download** the results as JSON, CSV, or XLSX.
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 🧩 Tech Stack
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Frontend:** React, TypeScript, Vite, shadcn-ui, Tailwind CSS
+- **Backend:** Flask, OpenAI-compatible API (Typhoon), pdf2image, pandas, opencv-python, Pillow
+- **OCR/AI:** Typhoon API
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/bc1362a1-21e1-4010-b9f9-3031a8ef65a7) and click on Share -> Publish.
+## ⚠️ Notes
 
-## Can I connect a custom domain to my Lovable project?
+- **API Key:** You must have a valid Typhoon API key.
+- **File Size Limit:** Max 50MB per upload.
+- **Supported Formats:** PDF, JPG, JPEG, PNG, BMP, TIFF, TIF.
+- **Poppler:** Required for PDF-to-image conversion.
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🛡️ Security
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- **Never commit your `.env` file** or API keys to version control.
+- All user-uploaded files are stored in the `uploads/` directory (excluded from git).
+
+---
+
+## 🧑‍💻 Development
+
+- Backend code: [`app.py`](app.py)
+- Frontend code: [`src/`](src/)
+- Update dependencies as needed in [`requirements.txt`](requirements.txt) and [`package.json`](package.json).
+
+---
+
+## 📄 License
+
+MIT (or your preferred license)
+
+---
+
+## 🤝 Contributing
+
+Pull requests and issues are welcome!
+
+---
+
+## 🌏 Credits
+
+- [Typhoon API](https://opentyphoon.ai/)
+- [pdf2image](https://github.com/Belval/pdf2image)
+- [shadcn/ui](https://ui.shadcn.com/)

@@ -23,9 +23,11 @@ const Index = () => {
   const [currentStep, setCurrentStep] = useState<"upload" | "extract" | "review">("upload");
   const { toast } = useToast();
 
+  const allowedExts = ['.pdf', '.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif'];
   const handleFileSelect = (selectedFile: File) => {
-    if (!selectedFile.name.toLowerCase().endsWith('.pdf')) {
-      setError("Please select a PDF file only");
+    const ext = selectedFile.name.toLowerCase().slice(selectedFile.name.lastIndexOf('.'));
+    if (!allowedExts.includes(ext)) {
+      setError("Please select a PDF or image file (JPG, PNG, BMP, TIFF)");
       return;
     }
     if (selectedFile.size > 50 * 1024 * 1024) { // 50MB limit
@@ -214,8 +216,8 @@ const Index = () => {
         {currentStep === "upload" && (
           <Card className="mb-6">
             <CardHeader>
-              <CardTitle>Upload PDF File</CardTitle>
-              <CardDescription>Select a PDF file containing Thai construction or real-estate documents</CardDescription>
+              <CardTitle>Upload PDF or Image File</CardTitle>
+              <CardDescription>Select a PDF or image file containing Thai construction or real-estate documents</CardDescription>
             </CardHeader>
             <CardContent>
               <div
@@ -224,11 +226,11 @@ const Index = () => {
                 onDragOver={(e) => e.preventDefault()}
               >
                 <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">Drag & drop your PDF file</p>
+                <p className="text-lg font-medium text-gray-700 mb-2">Drag & drop your PDF or image file</p>
                 <p className="text-gray-500 mb-4">Or click to browse files</p>
                 <input
                   type="file"
-                  accept=".pdf"
+                  accept=".pdf,.jpg,.jpeg,.png,.bmp,.tiff,.tif"
                   onChange={handleFileInputChange}
                   className="hidden"
                   id="file-input"
@@ -241,7 +243,7 @@ const Index = () => {
                   Choose PDF File
                 </Button>
                 <div className="text-sm text-gray-500 space-y-1">
-                  <p>• Supported format: PDF only</p>
+                  <p>• Supported formats: PDF, JPG, PNG, BMP, TIFF</p>
                   <p>• Maximum file size: 50MB</p>
                   <p>• Best for: Thai real-estate documents</p>
                 </div>
